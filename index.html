@@ -42,7 +42,7 @@
       height: auto;
     }
 
-    #copy-button {
+    #copy-button, #reset-button {
       background-color: #008CBA;
       color: white;
       padding: 10px 20px;
@@ -59,6 +59,7 @@
 </head>
 <body>
   <button id="copy-button">Copiar Tabela</button>
+  <button id="reset-button">Zerar Dados</button>
   <div id="counter">Index: <span id="index">0</span></div>
 
   <table id="data-table">
@@ -153,6 +154,10 @@
       copyTableToClipboard();
     });
 
+    document.getElementById("reset-button").addEventListener("click", function() {
+      resetData();
+    });
+
     function copyTableToClipboard() {
       const table = document.getElementById("data-table");
       const range = document.createRange();
@@ -163,6 +168,12 @@
       document.execCommand("copy");
       selection.removeAllRanges();
       alert("Tabela copiada para a área de transferência!");
+    }
+
+    function resetData() {
+      localStorage.removeItem("tableData");
+      localStorage.removeItem("lastX");
+      location.reload();
     }
   </script>
 </body>
