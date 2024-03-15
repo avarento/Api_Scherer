@@ -42,7 +42,7 @@
       height: auto;
     }
 
-    #copy-button, #reset-button {
+    .button {
       background-color: #008CBA;
       color: white;
       padding: 10px 20px;
@@ -58,8 +58,9 @@
   </style>
 </head>
 <body>
-  <button id="copy-button">Copiar Tabela</button>
-  <button id="reset-button">Zerar Dados</button>
+  <button id="copy-button" class="button">Copiar Tabela</button>
+  <button id="reset-button" class="button">Zerar Dados</button>
+  <button id="start-button" class="button">Iniciar Busca</button>
   <div id="counter">Index: <span id="index">0</span></div>
 
   <table id="data-table">
@@ -96,10 +97,20 @@
           `;
           tableBody.insertAdjacentHTML("beforeend", row);
         });
-      } else {
-        const lastX = localStorage.getItem("lastX") || 0;
-        fetchData(parseInt(lastX, 10));
       }
+    });
+
+    document.getElementById("copy-button").addEventListener("click", function() {
+      copyTableToClipboard();
+    });
+
+    document.getElementById("reset-button").addEventListener("click", function() {
+      resetData();
+    });
+
+    document.getElementById("start-button").addEventListener("click", function() {
+      const lastX = localStorage.getItem("lastX") || 0;
+      fetchData(parseInt(lastX, 10));
     });
 
     async function fetchData(startX) {
@@ -150,14 +161,6 @@
       localStorage.setItem("tableData", JSON.stringify(tableData));
     }
 
-    document.getElementById("copy-button").addEventListener("click", function() {
-      copyTableToClipboard();
-    });
-
-    document.getElementById("reset-button").addEventListener("click", function() {
-      resetData();
-    });
-
     function copyTableToClipboard() {
       const table = document.getElementById("data-table");
       const range = document.createRange();
@@ -173,6 +176,7 @@
     function resetData() {
       localStorage.removeItem("tableData");
       localStorage.removeItem("lastX");
+      document.getElementById("index").textContent = "0"; // Redefinir o índice para 0
       location.reload();
     }
   </script>
