@@ -79,14 +79,33 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      const lastX = localStorage.getItem("lastX") || 0;
-      fetchData(parseInt(lastX, 10));
+      const savedData = JSON.parse(localStorage.getItem("tableData"));
+      if (savedData) {
+        const tableBody = document.querySelector("#data-table tbody");
+        savedData.forEach(function(rowData) {
+          const row = `
+            <tr>
+              <td>${rowData.id}</td>
+              <td>${rowData.nome}</td>
+              <td>${rowData.cargo}</td>
+              <td>${rowData.filial}</td>
+              <td>${rowData.admissao}</td>
+              <td><img src="${rowData.foto}" alt="Foto"></td>
+            </tr>
+          `;
+          tableBody.insertAdjacentHTML("beforeend", row);
+        });
+      } else {
+        const lastX = localStorage.getItem("lastX") || 0;
+        fetchData(parseInt(lastX, 10));
+      }
     });
 
     async function fetchData(startX) {
       const tableBody = document.querySelector("#data-table tbody");
       const counterSpan = document.getElementById("index");
-      
+      const tableData = [];
+
       // Iterar de startX até 9999
       for (let x = startX; x <= 9999; x++) {
         try {
@@ -97,17 +116,26 @@
           
           // Adicionar linha à tabela se a resposta não for vazia
           if (Object.keys(data).length !== 0) {
+            const rowData = {
+              id: x,
+              nome: data.nome,
+              cargo: data.cargo,
+              filial: data.filial,
+              admissao: data.admissao,
+              foto: data.foto
+            };
             const row = `
               <tr>
-                <td>${x}</td>
-                <td>${data.nome}</td>
-                <td>${data.cargo}</td>
-                <td>${data.filial}</td>
-                <td>${data.admissao}</td>
-                <td><img src="${data.foto}" alt="Foto"></td>
+                <td>${rowData.id}</td>
+                <td>${rowData.nome}</td>
+                <td>${rowData.cargo}</td>
+                <td>${rowData.filial}</td>
+                <td>${rowData.admissao}</td>
+                <td><img src="${rowData.foto}" alt="Foto"></td>
               </tr>
             `;
             tableBody.insertAdjacentHTML("beforeend", row);
+            tableData.push(rowData);
           }
 
           // Atualizar o valor de lastX no armazenamento local
@@ -116,6 +144,9 @@
           console.error(`Erro ao buscar dados para x=${x}:`, error);
         }
       }
+
+      // Salvar dados da tabela no armazenamento local
+      localStorage.setItem("tableData", JSON.stringify(tableData));
     }
 
     document.getElementById("copy-button").addEventListener("click", function() {
