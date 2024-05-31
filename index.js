@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const { JSDOM } = require('jsdom');
 const https = require('https');
+const fs = require('fs');
 
 const httpsAgent = new https.Agent({
     rejectUnauthorized: false,
