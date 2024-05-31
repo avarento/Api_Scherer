@@ -21,9 +21,8 @@ app.get('/search', async (req, res) => {
 
         // Modifique os seletores para buscar os dados desejados no site
         const data = [];
-        const items = document
-            data.push({ items });
-        });
+        const items = document;
+        data.push(items);
 
         res.json(data);
     } catch (error) {
