@@ -1,6 +1,12 @@
 const express = require('express');
 const axios = require('axios');
 const { JSDOM } = require('jsdom');
+const https = require('https');
+
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+    cert: fs.readFileSync('../cert'),
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
