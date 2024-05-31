@@ -1,184 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Data Table</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
+const express = require('express');
+const axios = require('axios');
+const { JSDOM } = require('jsdom');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/search', async (req, res) => {
+    const busca = req.query.busca;
+    if (!busca) {
+        return res.status(400).send('O parâmetro "busca" é necessário');
     }
 
-    #data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+    const url = `https://www.scherer-sa.com.br/promocoes?parametro=codigo-scherer&busca=${busca}`;
 
-    #data-table th, #data-table td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
+    try {
+        const response = await axios.get(url);
+        const html = response.data;
+        const dom = new JSDOM(html);
+        const document = dom.window.document;
 
-    #data-table th {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    #data-table tbody tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    #data-table tbody tr:hover {
-      background-color: #ddd;
-    }
-
-    #data-table img {
-      max-width: 50px;
-      height: auto;
-    }
-
-    .button {
-      background-color: #008CBA;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
-
-    #counter {
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
-  <button id="copy-button" class="button">Copiar Tabela</button>
-  <button id="reset-button" class="button">Zerar Dados</button>
-  <button id="start-button" class="button">Iniciar Busca</button>
-  <div id="counter">Index: <span id="index">0</span></div>
-
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Cargo</th>
-        <th>Filial</th>
-        <th>Admissão</th>
-        <th>Foto</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Dados serão adicionados aqui dinamicamente -->
-    </tbody>
-  </table>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const savedData = JSON.parse(localStorage.getItem("tableData"));
-      if (savedData) {
-        const tableBody = document.querySelector("#data-table tbody");
-        savedData.forEach(function(rowData) {
-          const row = `
-            <tr>
-              <td>${rowData.id}</td>
-              <td>${rowData.nome}</td>
-              <td>${rowData.cargo}</td>
-              <td>${rowData.filial}</td>
-              <td>${rowData.admissao}</td>
-              <td><img src="${rowData.foto}" alt="Foto"></td>
-            </tr>
-          `;
-          tableBody.insertAdjacentHTML("beforeend", row);
+        // Modifique os seletores para buscar os dados desejados no site
+        const data = [];
+        const items = document
+            data.push({ items });
         });
-      }
-    });
 
-    document.getElementById("copy-button").addEventListener("click", function() {
-      copyTableToClipboard();
-    });
-
-    document.getElementById("reset-button").addEventListener("click", function() {
-      resetData();
-    });
-
-    document.getElementById("start-button").addEventListener("click", function() {
-      const lastX = localStorage.getItem("lastX") || 0;
-      fetchData(parseInt(lastX, 10));
-    });
-
-    async function fetchData(startX) {
-      const tableBody = document.querySelector("#data-table tbody");
-      const counterSpan = document.getElementById("index");
-      const tableData = [];
-
-      // Iterar de startX até 9999
-      for (let x = startX; x <= 9999; x++) {
-        try {
-          counterSpan.textContent = x; // Atualizar o contador
-          
-          const response = await fetch(`https://siede.vercel.app/api/y?x=${x}`);
-          const data = await response.json();
-          
-          // Adicionar linha à tabela se a resposta não for vazia
-          if (Object.keys(data).length !== 0) {
-            const rowData = {
-              id: x,
-              nome: data.nome,
-              cargo: data.cargo,
-              filial: data.filial,
-              admissao: data.admissao,
-              foto: data.foto
-            };
-            const row = `
-              <tr>
-                <td>${rowData.id}</td>
-                <td>${rowData.nome}</td>
-                <td>${rowData.cargo}</td>
-                <td>${rowData.filial}</td>
-                <td>${rowData.admissao}</td>
-                <td><img src="${rowData.foto}" alt="Foto"></td>
-              </tr>
-            `;
-            tableBody.insertAdjacentHTML("beforeend", row);
-            tableData.push(rowData);
-          }
-
-          // Atualizar o valor de lastX no armazenamento local
-          localStorage.setItem("lastX", x);
-        } catch (error) {
-          console.error(`Erro ao buscar dados para x=${x}:`, error);
-        }
-      }
-
-      // Salvar dados da tabela no armazenamento local
-      localStorage.setItem("tableData", JSON.stringify(tableData));
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar os dados');
     }
+});
 
-    function copyTableToClipboard() {
-      const table = document.getElementById("data-table");
-      const range = document.createRange();
-      range.selectNodeContents(table);
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.execCommand("copy");
-      selection.removeAllRanges();
-      alert("Tabela copiada para a área de transferência!");
-    }
-
-    function resetData() {
-      localStorage.removeItem("tableData");
-      localStorage.removeItem("lastX");
-      document.getElementById("index").textContent = "0"; // Redefinir o índice para 0
-      location.reload();
-    }
-  </script>
-</body>
-</html>
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
