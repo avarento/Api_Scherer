@@ -24,7 +24,7 @@ app.get('/search', async (req, res) => {
         const items = document;
         data.push(items);
 
-        res.json(data);
+        res.json(document);
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro ao buscar os dados');
