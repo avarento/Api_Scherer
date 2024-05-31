@@ -1,5 +1,5 @@
 {
-  "name": "minha-api",
+  "name": "scrap-api",
   "version": "1.0.0",
   "description": "API para buscar dados em um site e responder em JSON",
   "main": "index.js",
