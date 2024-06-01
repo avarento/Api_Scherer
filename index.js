@@ -21,12 +21,12 @@ app.get('/search', async (req, res) => {
     const url = `https://www.google.com.br`;
 
     try {
-    const { data } = await axios.get(url, { httpsAgent });
-    const dom = new JSDOM(data);
-    const { document } = dom.window
-    console.log("document: ", document)
+      const response = await axios.get(url);
+        const html = response.data;
+        const dom = new JSDOM(html);
+        const document = dom.window.document;
 
-        res.json(document);
+        res.send(document.documentElement.outerHTML);
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro ao buscar os dados');
