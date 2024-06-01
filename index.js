@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const httpsAgent = new https.Agent({
     rejectUnauthorized: false,
-    cert: fs.readFileSync('../cert'),
+    cert: fs.readFileSync('cert'),
 });
 
 const app = express();
