@@ -18,7 +18,7 @@ app.get('/search', async (req, res) => {
         return res.status(400).send('O parâmetro "busca" é necessário');
     }
 
-    const url = `https://www.google.com.br`;
+    const url = ``;
 
     try {
       const response = await axios.get(url);
