@@ -18,7 +18,7 @@ app.get('/search', async (req, res) => {
         return res.status(400).send('O parâmetro "busca" é necessário');
     }
 
-    const url = ``;
+    const url = `https://www.scherer-sa.com.br/promocoes?parametro=codigo-scherer&busca=${busca}`;
 
     try {
       const response = await axios.get(url);
